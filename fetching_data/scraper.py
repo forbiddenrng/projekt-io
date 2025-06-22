@@ -6,29 +6,30 @@ import csv
 from configparser import ConfigParser
 from random import randint, random
 
-FILEPATH="momenty_nawrocki/snus/top_przed.csv"
-PRODUCT="Top"
-MINIMUM_TWEETS = 750
-START_DATE='2025-05-18'
-END_DATE='2025-05-23'
-QUERY = f'(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:{END_DATE} since:{START_DATE}'
+FILEPATH="../momenty_nawrocki/rozmowa/latest_po2.csv"
+PRODUCT="Latest"
+MINIMUM_TWEETS = 1600
+START_DATE='2025-05-22'
+END_DATE='2025-05-27'
+# QUERY = f'(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:{END_DATE} since:{START_DATE}'
+QUERY = f'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:{END_DATE} since:{START_DATE}'
 
 QUERIES = [
-  '(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:2025-05-25 since:2025-05-24',
-  '(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:2025-05-26 since:2025-05-25',
-  '(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:2025-05-27 since:2025-05-26',
-  '(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:2025-05-28 since:2025-05-27',
-  '(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:2025-05-29 since:2025-05-28',
+  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-24 since:2025-05-23',
+  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-25 since:2025-05-24',
+  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-26 since:2025-05-25',
+  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-27 since:2025-05-26'
+
 ]
 
 MIN_WAIT_TIME=15
 MAX_WAIT_TIME=26
-READ_TWEET_PROBABILITY = 0.5
+READ_TWEET_PROBABILITY = 0.61
 
 def get_query(tweet_count):
-  return QUERY
-  # idx = tweet_count // 150
-  # return QUERIES[min(idx, len(QUERIES)- 1)]
+  # return QUERY
+  idx = tweet_count // 400
+  return QUERIES[min(idx, len(QUERIES)- 1)]
 
 prev_num_tweets = 0
 prev_tweets_data = []
@@ -40,7 +41,7 @@ def get_next_wait_time():
     if read_tweet:
       text = tweet[2]
       word_count = len(text.split())
-      wait_time += word_count * 0.17
+      wait_time += word_count * 0.21
   random_offset = randint(2, 7)
   return max(int(wait_time), MIN_WAIT_TIME) + random_offset
 
