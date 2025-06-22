@@ -6,19 +6,20 @@ import csv
 from configparser import ConfigParser
 from random import randint, random
 
-FILEPATH="../momenty_nawrocki/rozmowa/latest_po2.csv"
+FILEPATH="../momenty_nawrocki/mieszkanie/latest_po2.csv"
 PRODUCT="Latest"
-MINIMUM_TWEETS = 1600
+MINIMUM_TWEETS = 750
 START_DATE='2025-05-22'
 END_DATE='2025-05-27'
 # QUERY = f'(Karol OR Nawrocki OR snus OR nikotyna) lang:pl until:{END_DATE} since:{START_DATE}'
 QUERY = f'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:{END_DATE} since:{START_DATE}'
 
 QUERIES = [
-  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-24 since:2025-05-23',
-  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-25 since:2025-05-24',
-  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-26 since:2025-05-25',
-  'Nawrocki Mentzen (Nawrocki OR Mentzen OR deklaracja OR rozmowa) lang:pl until:2025-05-27 since:2025-05-26'
+  '(Nawrocki OR mieszkanie OR dps) lang:pl until:2025-05-07 since:2025-05-06',
+  '(Nawrocki OR mieszkanie OR dps) lang:pl until:2025-05-08 since:2025-05-07',
+  '(Nawrocki OR mieszkanie OR dps) lang:pl until:2025-05-09 since:2025-05-08',
+  '(Nawrocki OR mieszkanie OR dps) lang:pl until:2025-05-10 since:2025-05-09',
+  '(Nawrocki OR mieszkanie OR dps) lang:pl until:2025-05-11 since:2025-05-10',
 
 ]
 
@@ -28,7 +29,7 @@ READ_TWEET_PROBABILITY = 0.61
 
 def get_query(tweet_count):
   # return QUERY
-  idx = tweet_count // 400
+  idx = tweet_count // 150
   return QUERIES[min(idx, len(QUERIES)- 1)]
 
 prev_num_tweets = 0

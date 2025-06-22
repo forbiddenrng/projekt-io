@@ -6,7 +6,7 @@ import glob
 from datetime import datetime
 
 # Base directory containing all tweet files
-base_dir = 'c:/Users/antek/Desktop/projekt_io/momenty_trzaskowski'
+base_dir = 'c:/Users/antek/Desktop/projekt_io/momenty_nawrocki'
 
 # Find all CSV files in the directory and subdirectories
 csv_files = []
@@ -58,27 +58,33 @@ if all_tweets:
     plt.figure(figsize=(15, 8))
     
     # Group sources into categories
-    main_sources = ['debata', 'NASK', 'obietnica']
-    colors = {'debata': 'red', 'nask': 'orange', 'obietnica': 'green', 'main': 'purple'}
+    main_sources = ['mieszkanie', 'snus', 'rozmowa']
+    colors = {'mieszkanie': 'red', 'snus': 'orange', 'rozmowa': 'green', 'main': 'purple'}
     
     # Plot by source categories
     for source in combined_df['source'].unique():
       source_df = combined_df[combined_df['source'] == source]
       tweets_by_day = source_df.groupby(pd.Grouper(key='datetime', freq='D')).size()
+      # tweets_by_day = tweets_by_day.reindex(complete_date_range, fill_value=0)
+
       color = colors.get(source, 'gray')
       plt.plot(tweets_by_day.index, tweets_by_day.values, 
                 label=source, color=color, alpha=0.7)
     
     # Plot total tweets
     tweets_by_day_total = combined_df.groupby(pd.Grouper(key='datetime', freq='D')).size()
+    # tweets_by_day_total = tweets_by_day_total.reindex(complete_date_range, fill_value=0)
+    print(tweets_by_day_total)
     plt.plot(tweets_by_day_total.index, tweets_by_day_total.values, 
              'k-', label='Total', linewidth=2.5)
     
+
+
     # Mark important events
     events = [
-        {"date": "2025-05-15", "label": "NASK", "color": "red"},
-        {"date": "2025-05-20", "label": "Obietnica", "color": "red"},
-        {"date": "2025-04-11", "label": "Debata", "color": "red"},
+        {"date": "2025-05-05", "label": "Mieszkanie", "color": "red"},
+        {"date": "2025-05-23", "label": "Snus", "color": "red"},
+        {"date": "2025-05-22", "label": "Rozmowa", "color": "red"},
     ]
     
     for i, event in enumerate(events):
@@ -94,7 +100,7 @@ if all_tweets:
                   color=event["color"], fontweight='bold')
     
     # Format the plot
-    plt.title('Tweets about Rafał Trzaskowski during 2025 Election Campaign', fontsize=16)
+    plt.title('Tweets about Karol Nawrocki during 2025 Election Campaign', fontsize=16)
     plt.xlabel('Date', fontsize=12)
     plt.ylabel('Number of Tweets per Day', fontsize=12)
     plt.grid(True, alpha=0.3)
@@ -108,7 +114,7 @@ if all_tweets:
     plt.tight_layout()
     
     # Save the figure
-    output_path = os.path.join(base_dir, 'trzaskowski_tweets_timeline2.png')
+    output_path = os.path.join(base_dir, 'nawrocki_tweets_timeline3.png')
     plt.savefig(output_path, dpi=300)
     print(f"Plot saved to: {output_path}")
     
