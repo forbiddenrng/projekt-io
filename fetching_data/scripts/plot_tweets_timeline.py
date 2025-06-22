@@ -6,7 +6,7 @@ import glob
 from datetime import datetime
 
 # Base directory containing all tweet files
-base_dir = 'c:/Users/antek/Desktop/projekt_io/momenty_nawrocki'
+base_dir = 'c:/Users/antek/Desktop/projekt_io/momenty_trzaskowski'
 
 # Find all CSV files in the directory and subdirectories
 csv_files = []
@@ -58,8 +58,8 @@ if all_tweets:
     plt.figure(figsize=(15, 8))
     
     # Group sources into categories
-    main_sources = ['mieszkanie', 'snus']
-    colors = {'mieszkanie': 'red', 'snus': 'green', 'main': 'purple'}
+    main_sources = ['debata', 'NASK', 'obietnica']
+    colors = {'debata': 'red', 'nask': 'orange', 'obietnica': 'green', 'main': 'purple'}
     
     # Plot by source categories
     for source in combined_df['source'].unique():
@@ -76,8 +76,9 @@ if all_tweets:
     
     # Mark important events
     events = [
-        {"date": "2025-04-30", "label": "Mieszkanie", "color": "red"},
-        {"date": "2025-05-23", "label": "Snus", "color": "red"},
+        {"date": "2025-05-15", "label": "NASK", "color": "red"},
+        {"date": "2025-05-20", "label": "Obietnica", "color": "red"},
+        {"date": "2025-04-11", "label": "Debata", "color": "red"},
     ]
     
     for i, event in enumerate(events):
@@ -93,7 +94,7 @@ if all_tweets:
                   color=event["color"], fontweight='bold')
     
     # Format the plot
-    plt.title('Tweets about Karol Nawrocki during 2025 Election Campaign', fontsize=16)
+    plt.title('Tweets about Rafał Trzaskowski during 2025 Election Campaign', fontsize=16)
     plt.xlabel('Date', fontsize=12)
     plt.ylabel('Number of Tweets per Day', fontsize=12)
     plt.grid(True, alpha=0.3)
@@ -107,7 +108,7 @@ if all_tweets:
     plt.tight_layout()
     
     # Save the figure
-    output_path = os.path.join(base_dir, 'nawrocki_tweets_timeline2.png')
+    output_path = os.path.join(base_dir, 'trzaskowski_tweets_timeline2.png')
     plt.savefig(output_path, dpi=300)
     print(f"Plot saved to: {output_path}")
     

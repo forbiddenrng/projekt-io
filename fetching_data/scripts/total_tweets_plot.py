@@ -9,6 +9,7 @@ base_dir = "c:/Users/antek/Desktop/projekt_io"
 # Paths for Nawrocki tweets
 nawrocki_mieszkanie_dir = os.path.join(base_dir, "momenty_nawrocki/mieszkanie")
 nawrocki_snus_dir = os.path.join(base_dir, "momenty_nawrocki/snus")
+nawrocki_rozmowa_dir = os.path.join(base_dir, "momenty_nawrocki/rozmowa")
 
 # Paths for Trzaskowski tweets
 trzaskowski_debata_dir = os.path.join(base_dir, "momenty_trzaskowski/debata")
@@ -44,7 +45,8 @@ def read_csv_file(file_path):
 print("Reading Nawrocki tweets...")
 nawrocki_mieszkanie = read_csv_files_from_dir(nawrocki_mieszkanie_dir)
 nawrocki_snus = read_csv_files_from_dir(nawrocki_snus_dir)
-nawrocki_tweets = pd.concat([nawrocki_mieszkanie, nawrocki_snus])
+nawrocki_rozmowa = read_csv_files_from_dir(nawrocki_rozmowa_dir)
+nawrocki_tweets = pd.concat([nawrocki_mieszkanie, nawrocki_snus, nawrocki_rozmowa])
 
 # Read all Trzaskowski tweets
 print("Reading Trzaskowski tweets from directories...")
