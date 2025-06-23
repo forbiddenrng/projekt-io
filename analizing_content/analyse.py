@@ -91,8 +91,8 @@ def analyze_tweet_content(file_paths, wordcloud_output=None, frequency_chart_out
 
 def main():
   file_paths = [
-    '../momenty_trzaskowski/debata/latest_po.csv',
-    '../momenty_trzaskowski/debata/top_po.csv',
+    '../momenty_trzaskowski/obietnica/latest_po.csv',
+    '../momenty_trzaskowski/obietnica/top_po.csv',
   ]
 
   words, wc, freq_chart = analyze_tweet_content(

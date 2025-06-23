@@ -33,15 +33,25 @@ def preprocess_tweets(tweets):
   stop_words = load_stop_words()
   morf = morfeusz2.Morfeusz()
 
+
   for tweet in tweets:
     tweet = clean_tweet(tweet)
     tokens = word_tokenize(tweet.lower())
 
-    tokens = [morf.analyse(word)[0][2][1] for word in tokens if word.isalpha() and word not in stop_words]
-    cleaned_tweets.extend(tokens)
+    lemmatized_tokens=[]
+    for word in tokens:
+      if word.isalpha():
+        lemma = morf.analyse(word)[0][2][1]
 
-  removed_tags_tokens = remove_morf_tags(cleaned_tweets)
-  return removed_tags_tokens
+        if ":" in lemma:
+          lemma = lemma.split(":")[0]
+        if lemma not in stop_words:
+          lemmatized_tokens.append(lemma)
+
+    cleaned_tweets.extend(lemmatized_tokens)
+
+  # removed_tags_tokens = remove_morf_tags(cleaned_tweets)
+  return cleaned_tweets
 
 
 def get_word_frequency(tokens):
@@ -67,8 +77,8 @@ def remove_morf_tags(tokens):
 #   ]
 
 #   result = preprocess_tweets(tweets)
-#   clean_result = remove_morf_tags(result)
-#   print(clean_result)
+#   # clean_result = remove_morf_tags(result)
+#   print(result)
 
 
 
