@@ -8,7 +8,7 @@ import morfeusz2
 nltk.download('punkt_tab')
 
 """
-Remove links from and special characters like mentioning (@) and hashtags (#) from the tweet
+Remove links and special characters like mentioning (@) and hashtags (#) from the tweet
 """
 def clean_tweet(tweet):
 
@@ -40,11 +40,24 @@ def preprocess_tweets(tweets):
     tokens = [morf.analyse(word)[0][2][1] for word in tokens if word.isalpha() and word not in stop_words]
     cleaned_tweets.extend(tokens)
 
-  return cleaned_tweets
+  removed_tags_tokens = remove_morf_tags(cleaned_tweets)
+  return removed_tags_tokens
 
 
 def get_word_frequency(tokens):
   return pd.Series(tokens).value_counts()
+
+def remove_morf_tags(tokens):
+  changed_tokens = []
+  for token in tokens:
+    idx = token.find(":")
+    if idx != -1:
+      clean_token = token[:idx]
+      changed_tokens.append(clean_token)
+    else:
+      changed_tokens.append(token)
+
+  return changed_tokens
 
 
 # def main():
@@ -54,7 +67,8 @@ def get_word_frequency(tokens):
 #   ]
 
 #   result = preprocess_tweets(tweets)
-#   print(len(result))
+#   clean_result = remove_morf_tags(result)
+#   print(clean_result)
 
 
 

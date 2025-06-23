@@ -70,7 +70,6 @@ def analyze_tweet_content(file_paths, wordcloud_output=None, frequency_chart_out
   # Extract tweet text column (assuming it's named 'text' - adjust if needed)
   tweet_texts = tweets_df['Text'].tolist() if 'Text' in tweets_df.columns else tweets_df.iloc[:, 0].tolist()
 
-  print(tweet_texts)
   
   # Preprocess tweets
   processed_words = preprocess_tweets(tweet_texts)
@@ -92,14 +91,14 @@ def analyze_tweet_content(file_paths, wordcloud_output=None, frequency_chart_out
 
 def main():
   file_paths = [
-    '../momenty_trzaskowski/debata/latest_przed.csv',
-    '../momenty_trzaskowski/debata/top_przed.csv',
+    '../momenty_trzaskowski/debata/latest_po.csv',
+    '../momenty_trzaskowski/debata/top_po.csv',
   ]
 
   words, wc, freq_chart = analyze_tweet_content(
     file_paths,
-    wordcloud_output='wordcloud.png',
-    frequency_chart_output='word_frequency.png',
+    wordcloud_output='wordcloud_po_clean.png',
+    frequency_chart_output='word_frequency_po_clean.png',
   )
 
   plt.show()
