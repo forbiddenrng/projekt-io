@@ -1,0 +1,3 @@
+Model: "dkleczek/bert-base-polish-cased-v1" 
+Tokenizer: AutoTokenizer.from_pretrained(model_name)
+Analizer sentymentu: sentiment_analyzer = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
