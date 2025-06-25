@@ -1,0 +1,11 @@
+Text,emotion_score,emotion_label,numeric_score
+W końcu ktoś zabrał się za realną reformę sądownictwa. Brawo dla rządu za odwagę!,0.999419093132019,POSITIVE,0.999419093132019
+"Dzięki programom socjalnym wielu rodzinom żyje się po prostu lepiej. To jest realna pomoc, a nie tylko obietnice.",0.9992684721946716,POSITIVE,0.9992684721946716
+"Po raz pierwszy od lat czuję, że Polska ma konkretną strategię energetyczną. Inwestycje w atom i OZE idą w dobrym kierunku.",0.9990071654319763,POSITIVE,0.9990071654319763
+Duży plus za walkę z wykluczeniem komunikacyjnym. Pociągi wracają do małych miejscowości. Tak trzymać!,0.9993748068809509,POSITIVE,0.9993748068809509
+"Fajnie widzieć, że Polska potrafi prowadzić niezależną politykę zagraniczną i stawiać własne interesy na pierwszym miejscu.",0.9941157102584839,POSITIVE,0.9941157102584839
+"Obiecali transparentność, a mamy jeszcze większy chaos i układy niż wcześniej. Zero zaufania.",0.9998077750205994,NEGATIVE,-0.9998077750205994
+Kolejna afera i żadnych konsekwencji. Czy ktokolwiek jeszcze wierzy w uczciwość tej władzy?,0.9998970031738281,NEGATIVE,-0.9998970031738281
+"Młodzi wyjeżdżają, bo nie widzą tu przyszłości. Gdzie są reformy, które miały zatrzymać emigrację?",0.9998941421508789,NEGATIVE,-0.9998941421508789
+"Rolnicy protestują, a rząd udaje, że wszystko jest OK. Ignorancja wobec wsi to katastrofa.",0.9998974800109863,NEGATIVE,-0.9998974800109863
+"Politycy przejmują media publiczne jak swoją własność. To już nie informacja, tylko propaganda.",0.999903678894043,NEGATIVE,-0.999903678894043

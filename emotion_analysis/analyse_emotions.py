@@ -7,6 +7,14 @@ import json
 import datetime as datetime
 import numpy as np
 from tqdm import tqdm
+import random
+import torch
+
+seed=42
+random.seed(seed)
+np.random.seed(seed)
+if torch.cuda.is_available():
+  torch.cuda.manual_seed_all(seed)
 
 ##add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -16,10 +24,12 @@ from analizing_content.data_loading import load_all_tweets
 
 from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 
-model_name = "dkleczek/bert-base-polish-cased-v1" 
+model_name = "eevvgg/PaReS-sentimenTw-political-PL"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
 sentiment_analyzer = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+
+
 
 
 def analyze_emotion(text):
@@ -33,11 +43,16 @@ def analyze_emotion(text):
 
     result = sentiment_analyzer(cleaned_text)[0]
 
-    if result['label'] == 'LABEL_0':
-      result['label'] = 'NEGATIVE'
-    elif result['label'] == 'LABEL_1':
+    # if result['label'] == 'LABEL_0':
+    #   result['label'] = 'NEGATIVE'
+    # elif result['label'] == 'LABEL_1':
+    #   result['label'] = 'POSITIVE'
+    if result['label'] == 'Positive':
       result['label'] = 'POSITIVE'
+    elif result['label'] == 'Negative':
+      result['label'] = 'NEGATIVE'
 
+    
     return result
 
     # return result
@@ -45,7 +60,47 @@ def analyze_emotion(text):
     print(f"Error anayzling text: {e}")
     return {"score": 0, "label": "NEUTRAL"}
 
-print(analyze_emotion("przykładowy tekst"))
+
+
+
+wypowiedzi = [
+  "W końcu ktoś zabrał się za realną reformę sądownictwa. Brawo dla rządu za odwagę!",
+  "Dzięki programom socjalnym wielu rodzinom żyje się po prostu lepiej. To jest realna pomoc, a nie tylko obietnice.",
+  "Po raz pierwszy od lat czuję, że Polska ma konkretną strategię energetyczną. Inwestycje w atom i OZE idą w dobrym kierunku.",
+  "Duży plus za walkę z wykluczeniem komunikacyjnym. Pociągi wracają do małych miejscowości. Tak trzymać!",
+  "Fajnie widzieć, że Polska potrafi prowadzić niezależną politykę zagraniczną i stawiać własne interesy na pierwszym miejscu.",
+  "Obiecali transparentność, a mamy jeszcze większy chaos i układy niż wcześniej. Zero zaufania.",
+  "Kolejna afera i żadnych konsekwencji. Czy ktokolwiek jeszcze wierzy w uczciwość tej władzy?",
+  "Młodzi wyjeżdżają, bo nie widzą tu przyszłości. Gdzie są reformy, które miały zatrzymać emigrację?",
+  "Rolnicy protestują, a rząd udaje, że wszystko jest OK. Ignorancja wobec wsi to katastrofa.",
+  "Politycy przejmują media publiczne jak swoją własność. To już nie informacja, tylko propaganda."
+]
+
+
+def analyze_sample_statements(statements):
+  df = pd.DataFrame(statements, columns=['Text'])
+
+  df['emotion_score'] = 0.0
+  df['emotion_label'] = 'NEUTRAL'
+
+  print("Analyzing sample statements")
+
+  for i in range(len(df)):
+    text = df.iloc[i]['Text']
+    result = analyze_emotion(text)
+
+    df.loc[i, 'emotion_score'] = result['score']
+    df.loc[i, 'emotion_label'] = result['label']
+
+  df['numeric_score'] = df.apply(
+    lambda row: row['emotion_score'] if row['emotion_label'] == 'POSITIVE' else -row['emotion_score'] if row['emotion_label'] == "NEGATIVE" else 0,
+    axis=1
+  )
+
+  output_file = 'sample_statements_emotions.csv'
+  df.to_csv(output_file, index=False)
+  print(f"Results saved to {output_file}")
+
 
 
 def load_condidate_tweets(base_dir):
@@ -108,18 +163,27 @@ def analyze_tweets_emotions(df):
 
 def calculate_daily_emotions(df):
   df['numeric_score'] = df.apply(
-    lambda row: row['emotion_score'] if row['emotion_label'] == 'POSITIVE' else -row['emotion_score'] if row['emotion_label'] == 'NEGATIVE' else 0,
+    lambda row: 1 if row['emotion_label'] == 'POSITIVE' else -1 if row['emotion_label'] == 'NEGATIVE' else 0,
     axis=1 
   )
 
+  # Count sentiment tweets (positive and negative only)
+  df['is_sentiment'] = df['emotion_label'].isin(['POSITIVE', 'NEGATIVE']).astype(int)
+
   ## group by day
   daily_emotions = df.groupby(pd.Grouper(key="datetime", freq="D")).agg({
-    'numeric_score': 'mean',
+    'numeric_score': 'sum',
+    'is_sentiment': 'sum',
     'Text': 'count'
-  }).rename(columns={"Text": "tweet_count"})
+  }).rename(columns={"Text": "tweet_count", "is_sentiment": "sentiment_count"})
 
-
-  daily_emotions = daily_emotions.fillna(0)
+  # sum of values (-1 and 1) where sentiment_count > 0 and divide by sentiment_count
+  daily_emotions['numeric_score'] = (
+    daily_emotions['numeric_score'].where(daily_emotions['sentiment_count'] > 0, 0) / 
+    daily_emotions['sentiment_count'].where(daily_emotions['sentiment_count'] > 0, 1)
+  )
+  emotions_avg = daily_emotions['numeric_score'].mean()
+  daily_emotions = daily_emotions.fillna({'numeric_score': emotions_avg})
 
   return daily_emotions
 
@@ -201,7 +265,7 @@ def main():
 
 
     # Save processed data
-    nawrocki_with_emotions.to_csv('nawrocki_tweets_with_emotions.csv', index=False)
+    # nawrocki_with_emotions.to_csv('nawrocki_tweets_with_emotions.csv', index=False)
     daily_emotions_nawrocki.to_csv('nawrocki_daily_emotions.csv')
 
     #plot timeline
@@ -223,7 +287,7 @@ def main():
 
 
     # Save processed data
-    trzaskowski_with_emotions.to_csv('trzaskowski_tweets_with_emotions.csv', index=False)
+    # trzaskowski_with_emotions.to_csv('trzaskowski_tweets_with_emotions.csv', index=False)
     daily_emotions_trzaskowski.to_csv('trzaskowski_daily_emotions.csv')
 
     #plot timeline
