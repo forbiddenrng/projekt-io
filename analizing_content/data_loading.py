@@ -1,4 +1,5 @@
 import pandas as pd
+import os
 
 def load_tweets(filepath):
   try:
@@ -14,8 +15,14 @@ def load_all_tweets(file_paths=None):
   if file_paths is None:
     return None
   
+  exclude_files = ["top_po.csv", "top_przed.csv"]
   dataframes = []
   for path in file_paths:
+    filename = os.path.basename(path)
+
+    if filename in exclude_files:
+      continue
+    
     df = load_tweets(path)
     if df is not None:
       dataframes.append(df)

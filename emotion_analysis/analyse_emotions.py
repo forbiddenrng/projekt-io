@@ -22,12 +22,13 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from analizing_content.preprocessing import clean_tweet
 from analizing_content.data_loading import load_all_tweets
 
-from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
+from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer, AutoModel
 
-model_name = "eevvgg/PaReS-sentimenTw-political-PL"
+model_name = "citizenlab/twitter-xlm-roberta-base-sentiment-finetunned"
 tokenizer = AutoTokenizer.from_pretrained(model_name)
 model = AutoModelForSequenceClassification.from_pretrained(model_name)
-sentiment_analyzer = pipeline("sentiment-analysis", model=model, tokenizer=tokenizer)
+sentiment_analyzer = pipeline("text-classification", model=model, tokenizer=tokenizer)
+
 
 
 
@@ -51,6 +52,8 @@ def analyze_emotion(text):
       result['label'] = 'POSITIVE'
     elif result['label'] == 'Negative':
       result['label'] = 'NEGATIVE'
+    elif result['label'] == 'Neutral':
+      result['label'] == 'NEUTRAL'
 
     
     return result
@@ -78,28 +81,11 @@ wypowiedzi = [
 
 
 def analyze_sample_statements(statements):
-  df = pd.DataFrame(statements, columns=['Text'])
+  for statement in statements:
+    print(analyze_emotion(statement))
 
-  df['emotion_score'] = 0.0
-  df['emotion_label'] = 'NEUTRAL'
+# analyze_sample_statements(wypowiedzi)
 
-  print("Analyzing sample statements")
-
-  for i in range(len(df)):
-    text = df.iloc[i]['Text']
-    result = analyze_emotion(text)
-
-    df.loc[i, 'emotion_score'] = result['score']
-    df.loc[i, 'emotion_label'] = result['label']
-
-  df['numeric_score'] = df.apply(
-    lambda row: row['emotion_score'] if row['emotion_label'] == 'POSITIVE' else -row['emotion_score'] if row['emotion_label'] == "NEGATIVE" else 0,
-    axis=1
-  )
-
-  output_file = 'sample_statements_emotions.csv'
-  df.to_csv(output_file, index=False)
-  print(f"Results saved to {output_file}")
 
 
 
@@ -108,7 +94,8 @@ def load_condidate_tweets(base_dir):
 
   for root, dirs, files in os.walk(base_dir):
     for file in files:
-      if file.endswith(".csv"):
+      exclude_files = ["top_po.csv", "top_przed.csv"]
+      if file.endswith(".csv") and file not in exclude_files:
         all_csv_files.append(os.path.join(root, file))
 
   print(f"Found {len(all_csv_files)} CSV files in {base_dir}")
@@ -163,7 +150,9 @@ def analyze_tweets_emotions(df):
 
 def calculate_daily_emotions(df):
   df['numeric_score'] = df.apply(
-    lambda row: 1 if row['emotion_label'] == 'POSITIVE' else -1 if row['emotion_label'] == 'NEGATIVE' else 0,
+    lambda row: row['emotion_score'] if row['emotion_label'] == 'POSITIVE' 
+                else -row['emotion_score'] if row['emotion_label'] == 'NEGATIVE' 
+                else 0,
     axis=1 
   )
 
@@ -178,12 +167,13 @@ def calculate_daily_emotions(df):
   }).rename(columns={"Text": "tweet_count", "is_sentiment": "sentiment_count"})
 
   # sum of values (-1 and 1) where sentiment_count > 0 and divide by sentiment_count
-  daily_emotions['numeric_score'] = (
-    daily_emotions['numeric_score'].where(daily_emotions['sentiment_count'] > 0, 0) / 
-    daily_emotions['sentiment_count'].where(daily_emotions['sentiment_count'] > 0, 1)
-  )
-  emotions_avg = daily_emotions['numeric_score'].mean()
-  daily_emotions = daily_emotions.fillna({'numeric_score': emotions_avg})
+  daily_emotions['numeric_score'] = daily_emotions['numeric_score'].where(daily_emotions['sentiment_count'] > 0, 0)
+ 
+
+  if daily_emotions['numeric_score'].abs().max() > 0:
+    max_abs_score = daily_emotions['numeric_score'].abs().max()
+    daily_emotions['numeric_score'] = daily_emotions['numeric_score'] / max_abs_score
+
 
   return daily_emotions
 
